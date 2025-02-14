@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "QGraphicsScene"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -24,7 +25,9 @@ private slots:
 private:
     MainWindow(QWidget *parent = nullptr);
     static MainWindow *instance;
-
     Ui::MainWindow *ui;
+
+    QGraphicsScene *scene;
+    QImage inputImage;
 };
 #endif // MAINWINDOW_H
