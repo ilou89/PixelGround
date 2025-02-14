@@ -9,6 +9,19 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 }
 
+
+MainWindow* MainWindow::instance = nullptr;
+
+MainWindow *MainWindow::getInstance()
+{
+    if ( instance == nullptr ) {
+        instance = new MainWindow();
+    }
+
+    return instance;
+}
+
+
 MainWindow::~MainWindow()
 {
     delete ui;
