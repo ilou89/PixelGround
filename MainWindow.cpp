@@ -17,7 +17,8 @@ MainWindow::MainWindow(QWidget *parent)
     scene = new QGraphicsScene(this);
     ui->graphicsViewInput->setScene(scene);
     ui->graphicsViewOutput->setVisible(false);
-
+    params.filterSize = 3;
+    params.sigma      = 1.f;
     resizeEvent(nullptr);
 }
 
@@ -45,6 +46,11 @@ MainWindow *MainWindow::getInstance()
     return instance;
 }
 
+const OperationParameters *MainWindow::getParams()
+{
+    return &(this->params);
+}
+
 MainWindow::~MainWindow()
 {
     delete ui;
@@ -65,6 +71,8 @@ void MainWindow::on_actionOpen_triggered()
             //TODO zoom in-out
             ui->graphicsViewInput->fitInView(inputImage.rect(), Qt::KeepAspectRatio);
         }
+
+        outputImage = inputImage.copy();
     }
 }
 
@@ -84,10 +92,19 @@ void MainWindow::on_actionShowOutput_triggered(bool checked)
 
 void MainWindow::on_comboBoxOperation_currentIndexChanged(int index)
 {
-    qDebug()<<"Filter index: " << index;
-
     if ( index > 0 ) {
-        outputImage = inputImage.copy();
         imgOperation[index](&inputImage, &outputImage);
     }
 }
+
+void MainWindow::on_spinBoxFilterSize_valueChanged(int arg1)
+{
+    params.filterSize = arg1;
+}
+
+
+void MainWindow::on_doubleSpinBoxSigma_valueChanged(double arg1)
+{
+    params.sigma = (float) arg1;
+}
+

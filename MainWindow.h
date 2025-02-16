@@ -10,12 +10,18 @@ class MainWindow;
 }
 QT_END_NAMESPACE
 
+struct OperationParameters{
+    int filterSize;
+    float sigma;
+};
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
     static MainWindow *getInstance();
+    const OperationParameters *getParams();
 
     ~MainWindow();
 
@@ -27,6 +33,10 @@ private slots:
 
     void on_comboBoxOperation_currentIndexChanged(int index);
 
+    void on_spinBoxFilterSize_valueChanged(int arg1);
+
+    void on_doubleSpinBoxSigma_valueChanged(double arg1);
+
 private:
     MainWindow(QWidget *parent = nullptr);
     static MainWindow *instance;
@@ -36,5 +46,6 @@ private:
     QImage inputImage;
     QImage outputImage;
     void resizeEvent(QResizeEvent*);
+    OperationParameters params;
 };
 #endif // MAINWINDOW_H
