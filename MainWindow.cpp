@@ -2,9 +2,9 @@
 #include "QFileDialog"
 #include "QDebug"
 #include "./ui_MainWindow.h"
+#include "ImageOperations.h"
 
-#define ID_NONE          0
-#define ID_GAUSSIAN_BLUR 1
+void (*imgOperation[2])(QImage*, QImage*) = {NULL, gaussianBlur};
 
 MainWindow* MainWindow::instance = nullptr;
 
@@ -85,5 +85,9 @@ void MainWindow::on_actionShowOutput_triggered(bool checked)
 void MainWindow::on_comboBoxOperation_currentIndexChanged(int index)
 {
     qDebug()<<"Filter index: " << index;
-}
 
+    if ( index > 0 ) {
+        outputImage = inputImage.copy();
+        imgOperation[index](&inputImage, &outputImage);
+    }
+}
