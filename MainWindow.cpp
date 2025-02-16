@@ -13,6 +13,15 @@ MainWindow::MainWindow(QWidget *parent)
 
     scene = new QGraphicsScene(this);
     ui->graphicsViewInput->setScene(scene);
+    ui->graphicsViewOutput->setVisible(false);
+}
+
+void MainWindow::resizeEvent(QResizeEvent *)
+{
+    if ( inputImage.isNull() == false ) {
+        ui->graphicsViewInput->fitInView(inputImage.rect(), Qt::KeepAspectRatio);
+    }
+
 }
 
 MainWindow *MainWindow::getInstance()
@@ -42,7 +51,7 @@ void MainWindow::on_actionOpen_triggered()
             scene->addPixmap(pix);
 
             //TODO zoom in-out
-            ui->graphicsViewInput->fitInView(pix.rect());
+            ui->graphicsViewInput->fitInView(inputImage.rect(), Qt::KeepAspectRatio);
         }
     }
 }

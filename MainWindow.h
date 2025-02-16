@@ -29,5 +29,6 @@ private:
 
     QGraphicsScene *scene;
     QImage inputImage;
+    void resizeEvent(QResizeEvent*);
 };
 #endif // MAINWINDOW_H
