@@ -56,3 +56,16 @@ void MainWindow::on_actionOpen_triggered()
     }
 }
 
+
+void MainWindow::on_actionShowInput_triggered(bool checked)
+{
+    ui->graphicsViewInput->setVisible(checked);
+    resizeEvent(nullptr);
+}
+
+void MainWindow::on_actionShowOutput_triggered(bool checked)
+{
+    ui->graphicsViewOutput->setVisible(checked);
+    resizeEvent(nullptr);
+}
+
