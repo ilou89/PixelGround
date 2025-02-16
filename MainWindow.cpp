@@ -3,6 +3,9 @@
 #include "QDebug"
 #include "./ui_MainWindow.h"
 
+#define ID_NONE          0
+#define ID_GAUSSIAN_BLUR 1
+
 MainWindow* MainWindow::instance = nullptr;
 
 MainWindow::MainWindow(QWidget *parent)
@@ -14,15 +17,24 @@ MainWindow::MainWindow(QWidget *parent)
     scene = new QGraphicsScene(this);
     ui->graphicsViewInput->setScene(scene);
     ui->graphicsViewOutput->setVisible(false);
+
+    resizeEvent(nullptr);
 }
 
 void MainWindow::resizeEvent(QResizeEvent *)
 {
+    ui->spinBoxFilterSize->setMinimumWidth(ui->comboBoxOperation->width());
+    ui->doubleSpinBoxSigma->setMinimumWidth(ui->comboBoxImplementation->width());
+
+    ui->spinBoxFilterSize->setMaximumWidth(ui->comboBoxOperation->width());
+    ui->doubleSpinBoxSigma->setMaximumWidth(ui->comboBoxImplementation->width());
+
     if ( inputImage.isNull() == false ) {
         ui->graphicsViewInput->fitInView(inputImage.rect(), Qt::KeepAspectRatio);
     }
 
 }
+
 
 MainWindow *MainWindow::getInstance()
 {
@@ -67,5 +79,11 @@ void MainWindow::on_actionShowOutput_triggered(bool checked)
 {
     ui->graphicsViewOutput->setVisible(checked);
     resizeEvent(nullptr);
+}
+
+
+void MainWindow::on_comboBoxOperation_currentIndexChanged(int index)
+{
+    qDebug()<<"Filter index: " << index;
 }
 

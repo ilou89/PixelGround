@@ -25,6 +25,8 @@ private slots:
     void on_actionShowInput_triggered(bool checked);
     void on_actionShowOutput_triggered(bool checked);
 
+    void on_comboBoxOperation_currentIndexChanged(int index);
+
 private:
     MainWindow(QWidget *parent = nullptr);
     static MainWindow *instance;
