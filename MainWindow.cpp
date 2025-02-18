@@ -1,10 +1,10 @@
 #include "MainWindow.h"
-#include "QFileDialog"
-#include "QDebug"
+#include <QFileDialog>
+#include <QDebug>
 #include "./ui_MainWindow.h"
 #include "ImageOperations.h"
 
-void (*imgOperation[2])(QImage*, QImage*) = {NULL, gaussianBlur};
+void (*imgOperation[2])(QImage*, QImage*, QProgressDialog*) = {NULL, gaussianBlur};
 
 MainWindow* MainWindow::instance = nullptr;
 
@@ -66,6 +66,7 @@ MainWindow::~MainWindow()
 void MainWindow::on_actionOpen_triggered()
 {
     inputScene->clear();
+    outputScene->clear();
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), nullptr, tr("Image Files (*.png *.jpg)"));
     inputImage = QImage(fileName);
 
@@ -104,11 +105,7 @@ void MainWindow::on_actionShowOutput_triggered(bool checked)
 void MainWindow::on_comboBoxOperation_currentIndexChanged(int index)
 {
     if ( index > 0 ) {
-        imgOperation[index](&inputImage, &outputImage);
         outputScene->clear();
-        QPixmap pix = QPixmap::fromImage(outputImage);
-        outputScene->addPixmap(pix);
-        ui->graphicsViewOutput->fitInView(outputImage.rect(), Qt::KeepAspectRatio);
     }
 }
 
@@ -123,3 +120,34 @@ void MainWindow::on_doubleSpinBoxSigma_valueChanged(double arg1)
     params.sigma = (float) arg1;
 }
 
+
+void MainWindow::on_pushButton_released()
+{
+    int operationIdx = ui->comboBoxOperation->currentIndex();
+
+    if ( operationIdx > 0 ) {
+        outputImage = inputImage.copy();
+
+        QProgressDialog progress("Operation in progress.", "Cancel", 0, 100, this->centralWidget());
+        progress.setVisible(true);
+        progress.setWindowModality(Qt::WindowModal);
+        progress.setValue(0);
+        qApp->processEvents(QEventLoop::AllEvents);
+
+        imgOperation[operationIdx](&inputImage, &outputImage, &progress);
+        outputScene->clear();
+
+        //Invalidate output image
+        if ( progress.wasCanceled() == true ) {
+            outputImage = QImage();
+        }
+
+        if ( outputImage.isNull() == false ) {
+            QPixmap pix = QPixmap::fromImage(outputImage);
+            outputScene->addPixmap(pix);
+            ui->graphicsViewOutput->fitInView(outputImage.rect(), Qt::KeepAspectRatio);
+        }
+
+        progress.reset();
+    }
+}

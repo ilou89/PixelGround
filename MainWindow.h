@@ -2,7 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "QGraphicsScene"
+#include <QGraphicsScene>
+#include <QProgressDialog>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -27,15 +28,12 @@ public:
 
 private slots:
     void on_actionOpen_triggered();
-
     void on_actionShowInput_triggered(bool checked);
     void on_actionShowOutput_triggered(bool checked);
-
     void on_comboBoxOperation_currentIndexChanged(int index);
-
     void on_spinBoxFilterSize_valueChanged(int arg1);
-
     void on_doubleSpinBoxSigma_valueChanged(double arg1);
+    void on_pushButton_released();
 
 private:
     MainWindow(QWidget *parent = nullptr);

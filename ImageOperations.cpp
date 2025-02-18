@@ -1,8 +1,9 @@
 #include "ImageOperations.h"
-#include "QDebug"
+#include <QDebug>
 #include "MainWindow.h"
 #include <iostream>
 #include <cstdint>
+#include <QApplication>
 
 static void generateGaussian2D(int size, float sigma, float *filter) {
     int radius = size/2;
@@ -26,7 +27,7 @@ static void generateGaussian2D(int size, float sigma, float *filter) {
         }
     }
 
-#if 1
+#if 0
     float eval = 0;
     for (int x = 0; x < size; ++x) {
         for (int y = 0; y < size; ++y) {
@@ -40,7 +41,7 @@ static void generateGaussian2D(int size, float sigma, float *filter) {
 #endif
 }
 
-void gaussianBlur(QImage *inputImage, QImage *outputImage)
+void gaussianBlur(QImage *inputImage, QImage *outputImage, QProgressDialog *progress)
 {
     const OperationParameters *params = MainWindow::getInstance()->getParams();
     int    size = params->filterSize;
@@ -53,11 +54,15 @@ void gaussianBlur(QImage *inputImage, QImage *outputImage)
 
     generateGaussian2D(size, sigma, filter);
 
-    //Naive 2d convolution
+    int totalPixels = w*h;
+    int    curPixel = 0;
+    bool      abort = false;
 
+    //Naive 2d convolution
     int radius = size/2;
     for (int y = 0; y < h; ++y) {
         for (int x = 0; x < w; ++x) {
+            curPixel++;
             float rBlured = 0;
             float gBlured = 0;
             float bBlured = 0;
@@ -109,6 +114,21 @@ void gaussianBlur(QImage *inputImage, QImage *outputImage)
                 }
             }
 
+        }
+
+        if ( progress != nullptr ) {
+            qApp->processEvents(QEventLoop::AllEvents);
+
+            if ( progress->wasCanceled() == true ) {
+                abort = true;
+            }
+
+            float percent = ((float)curPixel/(float)totalPixels) * 100.f;
+            progress->setValue((int) percent);
+        }
+
+        if ( abort == true ) {
+            return;
         }
     }
 
