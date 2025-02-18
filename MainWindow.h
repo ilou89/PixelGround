@@ -42,7 +42,8 @@ private:
     static MainWindow *instance;
     Ui::MainWindow *ui;
 
-    QGraphicsScene *scene;
+    QGraphicsScene *inputScene;
+    QGraphicsScene *outputScene;
     QImage inputImage;
     QImage outputImage;
     void resizeEvent(QResizeEvent*);

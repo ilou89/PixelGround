@@ -14,9 +14,13 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    scene = new QGraphicsScene(this);
-    ui->graphicsViewInput->setScene(scene);
+    inputScene = new QGraphicsScene(this);
+    ui->graphicsViewInput->setScene(inputScene);
+    outputScene = new QGraphicsScene(this);
+    ui->graphicsViewOutput->setScene(outputScene);
+
     ui->graphicsViewOutput->setVisible(false);
+    ui->label->setVisible(false);
     params.filterSize = 3;
     params.sigma      = 1.f;
     resizeEvent(nullptr);
@@ -34,6 +38,9 @@ void MainWindow::resizeEvent(QResizeEvent *)
         ui->graphicsViewInput->fitInView(inputImage.rect(), Qt::KeepAspectRatio);
     }
 
+    if ( outputImage.isNull() == false ) {
+        ui->graphicsViewOutput->fitInView(outputImage.rect(), Qt::KeepAspectRatio);
+    }
 }
 
 
@@ -58,21 +65,23 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_actionOpen_triggered()
 {
-    scene->clear();
+    inputScene->clear();
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), nullptr, tr("Image Files (*.png *.jpg)"));
     inputImage = QImage(fileName);
 
     if ( inputImage.isNull() == false ) {
-        QPixmap pix;
-        pix = QPixmap::fromImage(inputImage);
+        QPixmap pix = QPixmap::fromImage(inputImage);
         if(pix.isNull()==0){
-            scene->addPixmap(pix);
+            inputScene->addPixmap(pix);
 
             //TODO zoom in-out
             ui->graphicsViewInput->fitInView(inputImage.rect(), Qt::KeepAspectRatio);
         }
 
         outputImage = inputImage.copy();
+
+        QString res =  QString::number(inputImage.width()) + "x" + QString::number(inputImage.height());
+        ui->statusbar->showMessage(res);
     }
 }
 
@@ -80,12 +89,14 @@ void MainWindow::on_actionOpen_triggered()
 void MainWindow::on_actionShowInput_triggered(bool checked)
 {
     ui->graphicsViewInput->setVisible(checked);
+    ui->label_2->setVisible(checked);
     resizeEvent(nullptr);
 }
 
 void MainWindow::on_actionShowOutput_triggered(bool checked)
 {
     ui->graphicsViewOutput->setVisible(checked);
+    ui->label->setVisible(checked);
     resizeEvent(nullptr);
 }
 
@@ -94,6 +105,10 @@ void MainWindow::on_comboBoxOperation_currentIndexChanged(int index)
 {
     if ( index > 0 ) {
         imgOperation[index](&inputImage, &outputImage);
+        outputScene->clear();
+        QPixmap pix = QPixmap::fromImage(outputImage);
+        outputScene->addPixmap(pix);
+        ui->graphicsViewOutput->fitInView(outputImage.rect(), Qt::KeepAspectRatio);
     }
 }
 
